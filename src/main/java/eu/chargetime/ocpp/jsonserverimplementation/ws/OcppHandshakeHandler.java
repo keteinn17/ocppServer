@@ -1,4 +1,4 @@
-package eu.chargetime.ocpp.jsonserverimplementation.config.ws;
+package eu.chargetime.ocpp.jsonserverimplementation.ws;
 
 import com.google.common.base.Strings;
 import eu.chargetime.ocpp.jsonserverimplementation.config.WebSocketConfiguration;

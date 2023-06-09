@@ -2,6 +2,7 @@ package eu.chargetime.ocpp.jsonserverimplementation.config;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 public enum DatabaseConfiguration {
@@ -9,6 +10,7 @@ public enum DatabaseConfiguration {
 
     private final DB db;
     private final Url url;
+    private final ChargerBox chargerBox;
     DatabaseConfiguration(){
         PropertiesFileLoader p = new PropertiesFileLoader("application.properties");
 
@@ -21,6 +23,7 @@ public enum DatabaseConfiguration {
                 .sqlLogging(p.getBoolean("db.sql.logging"))
                 .build();
         url=Url.builder().url(p.getString("spring.datasource.url")).build();
+        chargerBox=new ChargerBox();
     }
     @Builder
     @Getter
@@ -37,5 +40,17 @@ public enum DatabaseConfiguration {
     @Getter
     public static class Url{
         private final String url;
+    }
+
+    @Getter
+    @Setter
+    public static class ChargerBox{
+        private String chargeBox;
+        public ChargerBox() {
+
+        }
+        public ChargerBox(String chargeBox){
+            this.chargeBox =chargeBox;
+        }
     }
 }

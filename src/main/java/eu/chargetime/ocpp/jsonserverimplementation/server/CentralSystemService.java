@@ -18,10 +18,10 @@ public class CentralSystemService {
     public CentralSystemService(OcppServerRepository ocppServerRepository){
         this.ocppServerRepository=ocppServerRepository;
     }
-    public HeartbeatConfirmation heartbeat(HeartbeatRequest request) throws SQLException {
+    public HeartbeatConfirmation heartbeat(HeartbeatRequest request,String chargeBox) throws SQLException {
         DateTime dateTime=DateTime.now();
         ZonedDateTime zonedDateTime=ZonedDateTime.now();
-        ocppServerRepository.updateChargeboxHeartbeat("kiet",dateTime);
+        ocppServerRepository.updateChargeboxHeartbeat(chargeBox,dateTime);
         return new HeartbeatConfirmation(zonedDateTime);
     }
 }

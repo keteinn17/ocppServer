@@ -1,5 +1,6 @@
 package eu.chargetime.ocpp.jsonserverimplementation;
 
+import eu.chargetime.ocpp.jsonserverimplementation.config.ServerCoreProfileConfig;
 import eu.chargetime.ocpp.jsonserverimplementation.db.tables.ChargeBox;
 import org.jooq.DSLContext;
 import org.jooq.Record;
@@ -14,7 +15,7 @@ import static eu.chargetime.ocpp.jsonserverimplementation.db.Tables.CHARGE_BOX;
 
 public class Main {
     public static void main(String[] args) {
-        String userName = "root";
+        /*String userName = "root";
         String password = "123456";
         String url = "jdbc:mysql://localhost:3306/stevedb";
 
@@ -33,6 +34,8 @@ public class Main {
             System.out.println(e.getMessage());
         }finally {
 
-        }
+        }*/
+        ServerCoreProfileConfig serverCoreProfileConfig = new ServerCoreProfileConfig();
+        System.out.println(serverCoreProfileConfig);
     }
 }

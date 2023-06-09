@@ -5,12 +5,19 @@ import eu.chargetime.ocpp.feature.profile.ServerCoreProfile;
 import eu.chargetime.ocpp.jsonserverimplementation.server.CentralSystemService;
 import eu.chargetime.ocpp.model.core.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
+import javax.websocket.EndpointConfig;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
+import javax.websocket.server.ServerEndpointConfig;
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -18,6 +25,9 @@ import java.util.UUID;
 @Configuration
 @Getter
 @Slf4j
+@NoArgsConstructor
+/*@ServerEndpoint(value = "/websocket/CentralSystemService/{chargerBox}")
+@EnableWebSocket*/
 public class ServerCoreProfileConfig {
 
     private CentralSystemService centralSystemService;
@@ -25,6 +35,11 @@ public class ServerCoreProfileConfig {
     public ServerCoreProfileConfig(CentralSystemService centralSystemService){
         this.centralSystemService=centralSystemService;
     }
+
+/*    @OnOpen
+    public void onOpen(Session s, @PathParam("chargerBox") String chargeBox){
+        System.out.println("WebSocket opened for user " + chargeBox + ": " + s.getId());
+    }*/
 
     @Bean
     public ServerCoreEventHandler getCoreEventHandler() {
@@ -65,7 +80,9 @@ public class ServerCoreProfileConfig {
 
                 System.out.println(request);
                 try {
-                    centralSystemService.heartbeat(request);
+                    String chargeBox = DatabaseConfiguration.CONFIG.getChargerBox().getChargeBox();
+                    System.out.println(chargeBox);
+                    centralSystemService.heartbeat(request,chargeBox);
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }

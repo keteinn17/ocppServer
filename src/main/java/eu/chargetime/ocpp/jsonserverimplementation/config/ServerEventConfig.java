@@ -27,6 +27,9 @@ public class ServerEventConfig {
 
                 // sessionIndex is used to send messages.
                 System.out.println("New session " + sessionIndex + ": " + information.getIdentifier());
+                String chargeBox = information.getIdentifier().substring("/steve/websocket/CentralSystemService/".length());
+                System.out.println(chargeBox);
+                DatabaseConfiguration.CONFIG.getChargerBox().setChargeBox(chargeBox);
             }
 
             @Override
