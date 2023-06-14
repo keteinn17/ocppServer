@@ -1,7 +1,7 @@
 package eu.chargetime.ocpp.jsonserverimplementation.ws;
 
 import com.google.common.base.Strings;
-import eu.chargetime.ocpp.jsonserverimplementation.config.WebSocketConfiguration;
+import eu.chargetime.ocpp.jsonserverimplementation.config.server.WebSocketConfiguration;
 import eu.chargetime.ocpp.jsonserverimplementation.repository.OcppServerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package eu.chargetime.ocpp.jsonserverimplementation.config;
+package eu.chargetime.ocpp.jsonserverimplementation.config.server;
 
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;

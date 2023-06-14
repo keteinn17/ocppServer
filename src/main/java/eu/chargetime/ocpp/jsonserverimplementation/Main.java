@@ -1,17 +1,6 @@
 package eu.chargetime.ocpp.jsonserverimplementation;
 
-import eu.chargetime.ocpp.jsonserverimplementation.config.ServerCoreProfileConfig;
-import eu.chargetime.ocpp.jsonserverimplementation.db.tables.ChargeBox;
-import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.Result;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-
-import static eu.chargetime.ocpp.jsonserverimplementation.db.Tables.CHARGE_BOX;
+import eu.chargetime.ocpp.jsonserverimplementation.config.server.ServerCoreProfileConfig;
 
 public class Main {
     public static void main(String[] args) {

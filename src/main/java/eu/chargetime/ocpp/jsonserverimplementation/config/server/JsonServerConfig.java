@@ -1,4 +1,4 @@
-package eu.chargetime.ocpp.jsonserverimplementation.config;
+package eu.chargetime.ocpp.jsonserverimplementation.config.server;
 
 import eu.chargetime.ocpp.JSONServer;
 import eu.chargetime.ocpp.feature.profile.ServerCoreProfile;

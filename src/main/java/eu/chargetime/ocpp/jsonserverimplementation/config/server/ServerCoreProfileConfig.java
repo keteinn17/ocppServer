@@ -1,7 +1,8 @@
-package eu.chargetime.ocpp.jsonserverimplementation.config;
+package eu.chargetime.ocpp.jsonserverimplementation.config.server;
 
 import eu.chargetime.ocpp.feature.profile.ServerCoreEventHandler;
 import eu.chargetime.ocpp.feature.profile.ServerCoreProfile;
+import eu.chargetime.ocpp.jsonserverimplementation.config.DatabaseConfiguration;
 import eu.chargetime.ocpp.jsonserverimplementation.server.CentralSystemService;
 import eu.chargetime.ocpp.model.core.*;
 import lombok.Getter;
@@ -10,14 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.socket.config.annotation.EnableWebSocket;
+import org.springframework.stereotype.Controller;
 
-import javax.websocket.EndpointConfig;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.PathParam;
-import javax.websocket.server.ServerEndpoint;
-import javax.websocket.server.ServerEndpointConfig;
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -30,16 +25,12 @@ import java.util.UUID;
 @EnableWebSocket*/
 public class ServerCoreProfileConfig {
 
+    @Autowired
     private CentralSystemService centralSystemService;
     @Autowired
     public ServerCoreProfileConfig(CentralSystemService centralSystemService){
         this.centralSystemService=centralSystemService;
     }
-
-/*    @OnOpen
-    public void onOpen(Session s, @PathParam("chargerBox") String chargeBox){
-        System.out.println("WebSocket opened for user " + chargeBox + ": " + s.getId());
-    }*/
 
     @Bean
     public ServerCoreEventHandler getCoreEventHandler() {
