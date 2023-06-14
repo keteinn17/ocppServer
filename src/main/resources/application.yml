@@ -1,0 +1,39 @@
+websocket:
+  link: "${WEB_SOCKET_URL:localhost:8082/steve/websocket/CentralSystemService}"
+
+chargebox:
+  id: kiet
+
+server:
+  port: 9001
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: Client-Charge-Point
+
+spring-doc:
+  api-docs:
+    path: /api-docs
+    groups:
+      enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    display-request-duration: true
+    groups-order:  DESC
+    operations-sorter: method
+    disable-swagger-default-url: true
+  show-actuator: false
+
+logging:
+  level:
+    root: info
+    eu.chargetime.ocpp.jsonclientimplementation: debug
+    jdbc: off
+    jdbc.sqlonly: off
+    jdbc.sqltiming: info
+    jdbc.resultsettable: info
+    jdbc.audit: off
+    jdbc.resultset: off
+    jdbc.connection: off
