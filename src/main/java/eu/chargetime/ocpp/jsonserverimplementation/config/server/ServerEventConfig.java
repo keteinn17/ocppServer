@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.*;
+import java.util.concurrent.Executors;
 
 @Configuration
 @Getter
@@ -37,7 +38,6 @@ public class ServerEventConfig {
                     listConnection.put(chargeBox,sessionIndex);
                 }else{
                     listConnection.remove(chargeBox);
-                    server.closeSession(listConnection.get(chargeBox));
                     listConnection.put(chargeBox,sessionIndex);
                 }
                 DatabaseConfiguration.CONFIG.getChargerBox().setChargeBox(chargeBox);
@@ -47,7 +47,6 @@ public class ServerEventConfig {
             public void lostSession(UUID sessionIndex) {
 
                 System.out.println("Session " + sessionIndex + " lost connection");
-                server.closeSession(sessionIndex);
                 listConnection.remove(sessionIndex);
             }
         };

@@ -12,11 +12,6 @@ public class JsonServerImplementationApplication {
 	}
 	public static void main(String[] args) {
 		SpringApplication.run(JsonServerImplementationApplication.class, args);
-/*		ServerEventConfig serverEventConfig = new ServerEventConfig();
-		serverEventConfig.createServerCoreImpl();
-		ServerCoreProfileConfig serverCoreProfileConfig=new ServerCoreProfileConfig();
-		JSONServer server=new JSONServer(new ServerCoreProfile(serverCoreProfileConfig.getCoreEventHandler()));
-		server.open("localhost",8082, serverEventConfig.createServerCoreImpl());*/
 	}
 
 }

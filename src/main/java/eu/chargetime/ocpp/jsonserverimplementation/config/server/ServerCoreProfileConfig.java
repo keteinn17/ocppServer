@@ -3,7 +3,8 @@ package eu.chargetime.ocpp.jsonserverimplementation.config.server;
 import eu.chargetime.ocpp.feature.profile.ServerCoreEventHandler;
 import eu.chargetime.ocpp.feature.profile.ServerCoreProfile;
 import eu.chargetime.ocpp.jsonserverimplementation.config.DatabaseConfiguration;
-import eu.chargetime.ocpp.jsonserverimplementation.server.CentralSystemService;
+import eu.chargetime.ocpp.jsonserverimplementation.server.CentralSystemServiceImpl;
+import eu.chargetime.ocpp.jsonserverimplementation.server.service.CentralSystemService;
 import eu.chargetime.ocpp.model.core.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Controller;
 
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
@@ -71,6 +71,7 @@ public class ServerCoreProfileConfig {
 
                 System.out.println(request);
                 try {
+                    System.out.println(sessionIndex);
                     String chargeBox = DatabaseConfiguration.CONFIG.getChargerBox().getChargeBox();
                     System.out.println(chargeBox);
                     centralSystemService.heartbeat(request,chargeBox);
@@ -94,9 +95,14 @@ public class ServerCoreProfileConfig {
             public StartTransactionConfirmation handleStartTransactionRequest(UUID sessionIndex, StartTransactionRequest request) {
 
                 System.out.println(request);
-                // ... handle event
-
-                return new StartTransactionConfirmation(); // returning null means unsupported feature
+                String chargeBox = DatabaseConfiguration.CONFIG.getChargerBox().getChargeBox();
+                System.out.println(chargeBox);
+                try {
+                    StartTransactionConfirmation confirmation=centralSystemService.startTransaction(request,chargeBox);
+                    return confirmation;
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
 
             @Override
@@ -112,9 +118,11 @@ public class ServerCoreProfileConfig {
             public StopTransactionConfirmation handleStopTransactionRequest(UUID sessionIndex, StopTransactionRequest request) {
 
                 System.out.println(request);
-                // ... handle event
+                String chargeBox = DatabaseConfiguration.CONFIG.getChargerBox().getChargeBox();
+                System.out.println(chargeBox);
+                StopTransactionConfirmation confirmation = centralSystemService.stopTransaction(request,chargeBox);
 
-                return null; // returning null means unsupported feature
+                return confirmation; // returning null means unsupported feature
             }
         };
     }
