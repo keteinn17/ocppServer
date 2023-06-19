@@ -1,6 +1,6 @@
 package eu.chargetime.ocpp.jsonserverimplementation;
 
-import eu.chargetime.ocpp.jsonserverimplementation.config.server.ServerCoreProfileConfig;
+import eu.chargetime.ocpp.jsonserverimplementation.ws.controller.ServerCoreProfileConfig;
 
 public class Main {
     public static void main(String[] args) {

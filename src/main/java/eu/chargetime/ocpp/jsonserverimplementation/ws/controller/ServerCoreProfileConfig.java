@@ -1,4 +1,4 @@
-package eu.chargetime.ocpp.jsonserverimplementation.config.server;
+package eu.chargetime.ocpp.jsonserverimplementation.ws.controller;
 
 import eu.chargetime.ocpp.feature.profile.ServerCoreEventHandler;
 import eu.chargetime.ocpp.feature.profile.ServerCoreProfile;
@@ -52,9 +52,10 @@ public class ServerCoreProfileConfig {
             public BootNotificationConfirmation handleBootNotificationRequest(UUID sessionIndex, BootNotificationRequest request) {
 
                 System.out.println(request);
-                // ... handle event
-
-                return null; // returning null means unsupported feature
+                String chargeBox = DatabaseConfiguration.CONFIG.getChargerBox().getChargeBox();
+                System.out.println(chargeBox);
+                BootNotificationConfirmation confirmation = centralSystemService.bootNotification(request,chargeBox);
+                return confirmation;
             }
 
             @Override
@@ -109,9 +110,11 @@ public class ServerCoreProfileConfig {
             public StatusNotificationConfirmation handleStatusNotificationRequest(UUID sessionIndex, StatusNotificationRequest request) {
 
                 System.out.println(request);
-                // ... handle event
+                String chargeBox = DatabaseConfiguration.CONFIG.getChargerBox().getChargeBox();
+                System.out.println(chargeBox);
+                StatusNotificationConfirmation confirmation = centralSystemService.statusConfirmation(request,chargeBox);
 
-                return null; // returning null means unsupported feature
+                return confirmation; // returning null means unsupported feature
             }
 
             @Override

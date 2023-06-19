@@ -1,8 +1,11 @@
 package eu.chargetime.ocpp.jsonserverimplementation.ws.controller;
 
+import eu.chargetime.ocpp.JSONServer;
 import eu.chargetime.ocpp.NotConnectedException;
 import eu.chargetime.ocpp.OccurenceConstraintException;
 import eu.chargetime.ocpp.UnsupportedFeatureException;
+import eu.chargetime.ocpp.feature.profile.ServerCoreEventHandler;
+import eu.chargetime.ocpp.feature.profile.ServerCoreProfile;
 import eu.chargetime.ocpp.jsonserverimplementation.config.server.ServerEventConfig;
 import eu.chargetime.ocpp.jsonserverimplementation.ws.sendrequest.SendRequest;
 
@@ -25,6 +28,13 @@ import java.util.concurrent.ExecutionException;
 @Controller
 @RequestMapping(value = "/manager/operations/v1.6")
 public class OCPPController {
+
+    @Autowired
+    private final JSONServer server;
+    @Autowired
+    public OCPPController(JSONServer jsonServer){
+        this.server=jsonServer;
+    }
     private static final String CHANGE_AVAIL_PATH = "/ChangeAvailability";
     private static final String CANCEL_RESERVATION = "/CancelReservation";
     @Autowired private SendRequest sendRequest;
@@ -35,17 +45,18 @@ public class OCPPController {
     public ResponseEntity<Object> postChangeAvail(@ModelAttribute ChangeAvailabilityRequest params, @RequestParam String chargeBoxId) throws OccurenceConstraintException, UnsupportedFeatureException, NotConnectedException, ExecutionException, InterruptedException {
         try{
             UUID indexSession = ServerEventConfig.listConnection.get(chargeBoxId);
-            return new ResponseEntity<>(sendRequest.sendChangeAvail(params,indexSession),HttpStatus.OK);
+            System.out.println("Charge box id: "+chargeBoxId+" "+params.toString());
+            return new ResponseEntity<>(server.send(indexSession,params),HttpStatus.OK);
         }catch (Exception e){
             System.out.println(e.getMessage());
             return new ResponseEntity<>("Charge box is not recognized!",HttpStatus.BAD_REQUEST);
         }
     }
     @RequestMapping(value = CANCEL_RESERVATION, method = RequestMethod.POST)
-    public ResponseEntity<Object> cancelReservation(@ModelAttribute ClearCacheRequest params, @RequestParam String chargeBoxId) throws OccurenceConstraintException, UnsupportedFeatureException, NotConnectedException, ExecutionException, InterruptedException {
+    public ResponseEntity<Object> clearCache(@ModelAttribute ClearCacheRequest params, @RequestParam String chargeBoxId) throws OccurenceConstraintException, UnsupportedFeatureException, NotConnectedException, ExecutionException, InterruptedException {
         try{
             UUID indexSession = ServerEventConfig.listConnection.get(chargeBoxId);
-            return  new ResponseEntity<>(sendRequest.sendClearCache(params,indexSession),HttpStatus.OK);
+            return  new ResponseEntity<>(server.send(indexSession,params),HttpStatus.OK);
         }catch (Exception e){
             System.out.println(e.getMessage());
             return new ResponseEntity<>("Charge box is not recognized!",HttpStatus.BAD_REQUEST);

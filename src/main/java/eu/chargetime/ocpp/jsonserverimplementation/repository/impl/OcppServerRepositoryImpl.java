@@ -7,9 +7,7 @@ import eu.chargetime.ocpp.jsonserverimplementation.db.enums.TransactionStopFaile
 import eu.chargetime.ocpp.jsonserverimplementation.db.tables.records.ConnectorMeterValueRecord;
 import eu.chargetime.ocpp.jsonserverimplementation.repository.OcppServerRepository;
 import eu.chargetime.ocpp.jsonserverimplementation.repository.ReservationRepository;
-import eu.chargetime.ocpp.jsonserverimplementation.repository.dto.InsertTransactionParams;
-import eu.chargetime.ocpp.jsonserverimplementation.repository.dto.TransactionStatusUpdate;
-import eu.chargetime.ocpp.jsonserverimplementation.repository.dto.UpdateTransactionParams;
+import eu.chargetime.ocpp.jsonserverimplementation.repository.dto.*;
 import eu.chargetime.ocpp.jsonserverimplementation.server.CentralSystemServiceImpl;
 import eu.chargetime.ocpp.jsonserverimplementation.utils.ConnectionUtil;
 import eu.chargetime.ocpp.model.core.MeterValue;
@@ -175,6 +173,54 @@ public class OcppServerRepositoryImpl implements OcppServerRepository {
             } catch (Exception e) {
                 log.error("Exception occurred", e);
             }
+        });
+    }
+
+    @Override
+    public void updateChargebox(UpdateChargeBoxParams p) {
+        ctx.update(CHARGE_BOX)
+                .set(CHARGE_BOX.OCPP_PROTOCOL, p.getOcppProtocol().getCompositeValue())
+                .set(CHARGE_BOX.CHARGE_POINT_VENDOR, p.getVendor())
+                .set(CHARGE_BOX.CHARGE_POINT_MODEL, p.getModel())
+                .set(CHARGE_BOX.CHARGE_POINT_SERIAL_NUMBER, p.getPointSerial())
+                .set(CHARGE_BOX.CHARGE_BOX_SERIAL_NUMBER, p.getBoxSerial())
+                .set(CHARGE_BOX.FW_VERSION, p.getFwVersion())
+                .set(CHARGE_BOX.ICCID, p.getIccid())
+                .set(CHARGE_BOX.IMSI, p.getImsi())
+                .set(CHARGE_BOX.METER_TYPE, p.getMeterType())
+                .set(CHARGE_BOX.METER_SERIAL_NUMBER, p.getMeterSerial())
+                .set(CHARGE_BOX.LAST_HEARTBEAT_TIMESTAMP, p.getHeartbeatTimestamp())
+                .where(CHARGE_BOX.CHARGE_BOX_ID.equal(p.getChargeBoxId()))
+                .execute();
+    }
+
+    @Override
+    public void insertConnectorStatus(InsertConnectorStatusParams p) {
+        ctx.transaction(configuration -> {
+            DSLContext ctx = DSL.using(configuration);
+
+            // Step 1
+            insertIgnoreConnector(ctx, p.getChargeBoxId(), p.getConnectorId());
+
+            // -------------------------------------------------------------------------
+            // Step 2: We store a log of connector statuses
+            // -------------------------------------------------------------------------
+
+            ctx.insertInto(CONNECTOR_STATUS)
+                    .set(CONNECTOR_STATUS.CONNECTOR_PK, DSL.select(CONNECTOR.CONNECTOR_PK)
+                            .from(CONNECTOR)
+                            .where(CONNECTOR.CHARGE_BOX_ID.equal(p.getChargeBoxId()))
+                            .and(CONNECTOR.CONNECTOR_ID.equal(p.getConnectorId()))
+                    )
+                    .set(CONNECTOR_STATUS.STATUS_TIMESTAMP, p.getTimestamp())
+                    .set(CONNECTOR_STATUS.STATUS, p.getStatus())
+                    .set(CONNECTOR_STATUS.ERROR_CODE, p.getErrorCode())
+                    .set(CONNECTOR_STATUS.ERROR_INFO, p.getErrorInfo())
+                    .set(CONNECTOR_STATUS.VENDOR_ID, p.getVendorId())
+                    .set(CONNECTOR_STATUS.VENDOR_ERROR_CODE, p.getVendorErrorCode())
+                    .execute();
+
+            log.debug("Stored a new connector status for {}/{}.", p.getChargeBoxId(), p.getConnectorId());
         });
     }
 
