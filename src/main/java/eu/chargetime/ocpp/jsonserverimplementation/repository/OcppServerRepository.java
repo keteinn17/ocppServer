@@ -22,4 +22,6 @@ public interface OcppServerRepository {
     void insertMeterValues(String chargeBoxIdentity, MeterValue[] list, int transactionId);
     void updateChargebox(UpdateChargeBoxParams params);
     void insertConnectorStatus(InsertConnectorStatusParams params);
+
+    void insertMeterValues(String chargeBoxIdentity, List<MeterValue> list, int connectorId, Integer transactionId);
 }

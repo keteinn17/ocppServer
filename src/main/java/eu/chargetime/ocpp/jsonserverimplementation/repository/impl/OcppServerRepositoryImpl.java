@@ -224,6 +224,26 @@ public class OcppServerRepositoryImpl implements OcppServerRepository {
         });
     }
 
+    @Override
+    public void insertMeterValues(String chargeBoxIdentity, List<MeterValue> list, int connectorId, Integer transactionId) {
+        if (CollectionUtils.isEmpty(list)) {
+            return;
+        }
+
+        ctx.transaction(configuration -> {
+            try {
+                DSLContext ctx = DSL.using(configuration);
+
+                insertIgnoreConnector(ctx, chargeBoxIdentity, connectorId);
+                int connectorPk = getConnectorPkFromConnector(ctx, chargeBoxIdentity, connectorId);
+                MeterValue[] meterValues = list.toArray(new MeterValue[0]);
+                batchInsertMeterValues(ctx, meterValues, connectorPk, transactionId);
+            } catch (Exception e) {
+                log.error("Exception occurred", e);
+            }
+        });
+    }
+
     private void insertConnectorStatus(DSLContext ctx,
                                        SelectConditionStep<Record1<Integer>> connectorPkQuery,
                                        DateTime timestamp,
@@ -354,6 +374,15 @@ public class OcppServerRepositoryImpl implements OcppServerRepository {
                                                 .setValue(k.getValue()))
                                                 ).collect(Collectors.toList());
         ctx.batchInsert(batch).execute();
+    }
+
+    private int getConnectorPkFromConnector(DSLContext ctx, String chargeBoxIdentity, int connectorId) {
+        return ctx.select(CONNECTOR.CONNECTOR_PK)
+                .from(CONNECTOR)
+                .where(CONNECTOR.CHARGE_BOX_ID.equal(chargeBoxIdentity))
+                .and(CONNECTOR.CONNECTOR_ID.equal(connectorId))
+                .fetchOne()
+                .value1();
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

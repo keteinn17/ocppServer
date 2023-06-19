@@ -1,18 +1,11 @@
 package eu.chargetime.ocpp.jsonserverimplementation.ws.controller;
 
-import eu.chargetime.ocpp.JSONServer;
-import eu.chargetime.ocpp.NotConnectedException;
-import eu.chargetime.ocpp.OccurenceConstraintException;
-import eu.chargetime.ocpp.UnsupportedFeatureException;
-import eu.chargetime.ocpp.feature.profile.ServerCoreEventHandler;
-import eu.chargetime.ocpp.feature.profile.ServerCoreProfile;
+import eu.chargetime.ocpp.*;
 import eu.chargetime.ocpp.jsonserverimplementation.config.server.ServerEventConfig;
 import eu.chargetime.ocpp.jsonserverimplementation.ws.sendrequest.SendRequest;
 
-import eu.chargetime.ocpp.model.core.ChangeAvailabilityRequest;
+import eu.chargetime.ocpp.model.core.*;
 
-import eu.chargetime.ocpp.model.core.ClearCacheRequest;
-import eu.chargetime.ocpp.model.reservation.CancelReservationRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,7 +39,7 @@ public class OCPPController {
         try{
             UUID indexSession = ServerEventConfig.listConnection.get(chargeBoxId);
             System.out.println("Charge box id: "+chargeBoxId+" "+params.toString());
-            return new ResponseEntity<>(server.send(indexSession,params),HttpStatus.OK);
+            return new ResponseEntity<>(server.send(indexSession,params).toCompletableFuture().get(),HttpStatus.OK);
         }catch (Exception e){
             System.out.println(e.getMessage());
             return new ResponseEntity<>("Charge box is not recognized!",HttpStatus.BAD_REQUEST);
@@ -56,10 +49,42 @@ public class OCPPController {
     public ResponseEntity<Object> clearCache(@ModelAttribute ClearCacheRequest params, @RequestParam String chargeBoxId) throws OccurenceConstraintException, UnsupportedFeatureException, NotConnectedException, ExecutionException, InterruptedException {
         try{
             UUID indexSession = ServerEventConfig.listConnection.get(chargeBoxId);
-            return  new ResponseEntity<>(server.send(indexSession,params),HttpStatus.OK);
+            return  new ResponseEntity<>(server.send(indexSession,params).toCompletableFuture().get(),HttpStatus.OK);
         }catch (Exception e){
             System.out.println(e.getMessage());
             return new ResponseEntity<>("Charge box is not recognized!",HttpStatus.BAD_REQUEST);
+        }
+    }
+    @RequestMapping(value = "/ChangeConfiguration", method = RequestMethod.POST)
+    public ResponseEntity<Object> changeConfiguration(@ModelAttribute ChangeConfigurationRequest params,@RequestParam String chargeBoxId) throws OccurenceConstraintException, UnsupportedFeatureException, NotConnectedException, ExecutionException, InterruptedException {
+        UUID indexSession = ServerEventConfig.listConnection.get(chargeBoxId);
+        try {
+            return new ResponseEntity<>(server.send(indexSession,params).toCompletableFuture().get(),HttpStatus.OK);
+        } catch (InterruptedException | NotConnectedException | UnsupportedFeatureException |
+                 OccurenceConstraintException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @RequestMapping(value = "/GetConfiguration", method = RequestMethod.POST)
+    public ResponseEntity<Object> getConfiguration(@ModelAttribute GetConfigurationRequest params, @RequestParam String chargeBoxId) throws OccurenceConstraintException, UnsupportedFeatureException, NotConnectedException, ExecutionException, InterruptedException {
+        UUID indexSession = ServerEventConfig.listConnection.get(chargeBoxId);
+        try {
+            return new ResponseEntity<>(server.send(indexSession,params).toCompletableFuture().get(),HttpStatus.OK);
+        } catch (InterruptedException | NotConnectedException | UnsupportedFeatureException |
+                 OccurenceConstraintException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @RequestMapping(value = "/DataTransfer", method = RequestMethod.POST)
+    public ResponseEntity<Object> dataTransfer(@ModelAttribute DataTransferRequest params, @RequestParam String chargeBoxId) throws Exception {
+        UUID indexSession = ServerEventConfig.listConnection.get(chargeBoxId);
+        try {
+            return new ResponseEntity<>(server.send(indexSession,params).toCompletableFuture().get(),HttpStatus.OK);
+        } catch (InterruptedException | NotConnectedException | UnsupportedFeatureException |
+                 OccurenceConstraintException | ExecutionException e) {
+            throw new Exception();
         }
     }
 

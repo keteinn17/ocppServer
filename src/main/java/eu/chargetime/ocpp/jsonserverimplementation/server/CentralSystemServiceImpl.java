@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -121,7 +122,20 @@ public class CentralSystemServiceImpl implements CentralSystemService {
             applicationEventPublisher.publishEvent(new OcppStationStatusFailure(
                     chargeBox, request.getConnectorId(), request.getErrorCode().toString()));
         }
+        ocppServerRepository.insertConnectorStatus(params);
         return new StatusNotificationConfirmation();
+    }
+
+    @Override
+    public MeterValuesConfirmation meterValue(MeterValuesRequest request, String chargeBox) {
+        ocppServerRepository.insertMeterValues(
+                chargeBox,
+                List.of(request.getMeterValue()),
+                request.getConnectorId(),
+                request.getTransactionId()
+        );
+
+        return new MeterValuesConfirmation();
     }
 
     public static DateTime convert(ZonedDateTime zdt){

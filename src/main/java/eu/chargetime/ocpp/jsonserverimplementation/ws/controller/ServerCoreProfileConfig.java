@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.websocket.server.ServerEndpoint;
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -23,6 +24,7 @@ import java.util.UUID;
 @NoArgsConstructor
 /*@ServerEndpoint(value = "/websocket/CentralSystemService/{chargerBox}")
 @EnableWebSocket*/
+
 public class ServerCoreProfileConfig {
 
     @Autowired
@@ -48,6 +50,11 @@ public class ServerCoreProfileConfig {
                 return new AuthorizeConfirmation(idTagInfo);
             }
 
+            /**
+             * @param sessionIndex
+             * @param request
+             * @return
+             */
             @Override
             public BootNotificationConfirmation handleBootNotificationRequest(UUID sessionIndex, BootNotificationRequest request) {
 
@@ -67,6 +74,11 @@ public class ServerCoreProfileConfig {
                 return null; // returning null means unsupported feature
             }
 
+            /**
+             * @param sessionIndex
+             * @param request
+             * @return
+             */
             @Override
             public HeartbeatConfirmation handleHeartbeatRequest(UUID sessionIndex, HeartbeatRequest request) {
 
@@ -87,9 +99,12 @@ public class ServerCoreProfileConfig {
             public MeterValuesConfirmation handleMeterValuesRequest(UUID sessionIndex, MeterValuesRequest request) {
 
                 System.out.println(request);
-                // ... handle event
+                String chargeBox = DatabaseConfiguration.CONFIG.getChargerBox().getChargeBox();
+                System.out.println(chargeBox);
+                System.out.println(sessionIndex);
+                MeterValuesConfirmation confirmation =centralSystemService.meterValue(request,chargeBox);
 
-                return null; // returning null means unsupported feature
+                return confirmation; // returning null means unsupported feature
             }
 
             @Override
