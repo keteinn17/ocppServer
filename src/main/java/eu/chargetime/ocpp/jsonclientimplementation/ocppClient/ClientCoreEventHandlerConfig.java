@@ -26,7 +26,7 @@ public class ClientCoreEventHandlerConfig {
                 System.out.println(request);
                 // ... handle event
 
-                return null; // returning null means unsupported feature
+                return new GetConfigurationConfirmation(); // returning null means unsupported feature
             }
 
             @Override
@@ -35,7 +35,7 @@ public class ClientCoreEventHandlerConfig {
                 System.out.println(request);
                 // ... handle event
 
-                return null; // returning null means unsupported feature
+                return new ChangeConfigurationConfirmation(ConfigurationStatus.Accepted); // returning null means unsupported feature
             }
 
             @Override
@@ -53,7 +53,7 @@ public class ClientCoreEventHandlerConfig {
                 System.out.println(request);
                 // ... handle event
 
-                return null; // returning null means unsupported feature
+                return new DataTransferConfirmation(DataTransferStatus.Accepted); // returning null means unsupported feature
             }
 
             @Override
