@@ -125,7 +125,7 @@ public class ClientService {
 
     @PostMapping(path = "/StatusNotification")
     public ResponseEntity<Object> StatusNotification(
-            @RequestParam("connectorId") Integer connectorId
+            @ModelAttribute StatusNotificationRequest request
     ) throws Exception {
         Map<String, Object> reqMap = new HashMap<>();
         Map<String, Object> resInf = new HashMap<>();
@@ -135,7 +135,7 @@ public class ClientService {
         ChargePointErrorCode errorCode = ChargePointErrorCode.NoError;
         ChargePointStatus status = ChargePointStatus.Charging;
 
-        StatusNotificationRequest request = clientCoreProfile.createStatusNotificationRequest(connectorId, errorCode, status);
+        //StatusNotificationRequest request = clientCoreProfile.createStatusNotificationRequest(connectorId, errorCode, status);
         jsonClient.connect(url, null);
         try {
             StatusNotificationConfirmation confirmation = (StatusNotificationConfirmation) jsonClient.send(request)
@@ -175,13 +175,13 @@ public class ClientService {
     }
 
     @PostMapping(path = "/BootNotification")
-    public ResponseEntity<Object> BootNotification()
+    public ResponseEntity<Object> BootNotification(@ModelAttribute BootNotificationRequest request)
             throws Exception {
         Map<String, Object> resInf = new HashMap<>();
         JSONObject res;
         String url = "ws://" + apiConfigurations.getWebSocketBaseUrl() + "/" + apiConfigurations.getChargeBoxId();
 
-        String vendor = "Dasvision Vendor";
+/*        String vendor = "Dasvision Vendor";
         String model = "TruongVD";
 
         BootNotificationRequest request = clientCoreProfile.createBootNotificationRequest(vendor, model);
@@ -190,7 +190,7 @@ public class ClientService {
         request.setFirmwareVersion("Version 1.0 for 1.6 Dasvision");
         request.setMeterType("MeterType Dasvision");
         request.setChargePointSerialNumber("#CP Serial Dasvision");
-        request.setMeterSerialNumber("#Meter Serial Dasvision");
+        request.setMeterSerialNumber("#Meter Serial Dasvision");*/
 
         jsonClient.connect(url, null);
         try {
