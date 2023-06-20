@@ -9,5 +9,6 @@ public interface CentralSystemService {
     StopTransactionConfirmation stopTransaction(StopTransactionRequest request,String chargeBox);
     BootNotificationConfirmation bootNotification(BootNotificationRequest request,String chargeBox);
     StatusNotificationConfirmation statusConfirmation(StatusNotificationRequest request, String chargeBox);
-    public MeterValuesConfirmation meterValue(MeterValuesRequest request,String chargeBox);
+    MeterValuesConfirmation meterValue(MeterValuesRequest request,String chargeBox);
+    DataTransferConfirmation dataTransfer(DataTransferRequest request,String chargeBox);
 }

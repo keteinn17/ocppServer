@@ -3,7 +3,6 @@ package eu.chargetime.ocpp.jsonserverimplementation.ws.controller;
 import eu.chargetime.ocpp.feature.profile.ServerCoreEventHandler;
 import eu.chargetime.ocpp.feature.profile.ServerCoreProfile;
 import eu.chargetime.ocpp.jsonserverimplementation.config.DatabaseConfiguration;
-import eu.chargetime.ocpp.jsonserverimplementation.server.CentralSystemServiceImpl;
 import eu.chargetime.ocpp.jsonserverimplementation.server.service.CentralSystemService;
 import eu.chargetime.ocpp.model.core.*;
 import lombok.Getter;
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.websocket.server.ServerEndpoint;
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -22,8 +20,6 @@ import java.util.UUID;
 @Getter
 @Slf4j
 @NoArgsConstructor
-/*@ServerEndpoint(value = "/websocket/CentralSystemService/{chargerBox}")
-@EnableWebSocket*/
 
 public class ServerCoreProfileConfig {
 
@@ -69,9 +65,10 @@ public class ServerCoreProfileConfig {
             public DataTransferConfirmation handleDataTransferRequest(UUID sessionIndex, DataTransferRequest request) {
 
                 System.out.println(request);
-                // ... handle event
-
-                return null; // returning null means unsupported feature
+                String chargeBox = DatabaseConfiguration.CONFIG.getChargerBox().getChargeBox();
+                System.out.println(chargeBox);
+                DataTransferConfirmation confirmation=centralSystemService.dataTransfer(request,chargeBox);
+                return confirmation; // returning null means unsupported feature
             }
 
             /**

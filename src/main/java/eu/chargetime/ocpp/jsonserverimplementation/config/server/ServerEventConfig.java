@@ -34,8 +34,6 @@ public class ServerEventConfig {
                 // sessionIndex is used to send messages.
                 System.out.println("New session " + sessionIndex + ": " + information.getIdentifier());
                 String chargeBox = information.getIdentifier().substring("/steve/websocket/CentralSystemService/".length());
-/*                System.out.println(information.getAddress().getPort());
-                System.out.println(information.getSOAPtoURL());*/
                 if(!listConnection.containsKey(chargeBox)){
                     listConnection.put(chargeBox,sessionIndex);
                 }else{

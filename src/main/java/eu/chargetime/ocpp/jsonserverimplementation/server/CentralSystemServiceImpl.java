@@ -138,6 +138,19 @@ public class CentralSystemServiceImpl implements CentralSystemService {
         return new MeterValuesConfirmation();
     }
 
+    @Override
+    public DataTransferConfirmation dataTransfer(DataTransferRequest request, String chargeBox) {
+        log.info("[Data Transfer] Charge point: {}, Vendor Id: {}", chargeBox, request.getVendorId());
+        if (request.getMessageId()!= null) {
+            log.info("[Data Transfer] Message Id: {}", request.getMessageId());
+        }
+        if (request.getData()!=null) {
+            log.info("[Data Transfer] Data: {}", request.getData());
+        }
+
+        return new DataTransferConfirmation(DataTransferStatus.Accepted);
+    }
+
     public static DateTime convert(ZonedDateTime zdt){
         return new DateTime(zdt.toInstant().toEpochMilli(),DateTimeZone.UTC);
     }
