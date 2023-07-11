@@ -6,6 +6,8 @@ import eu.chargetime.ocpp.UnsupportedFeatureException;
 import eu.chargetime.ocpp.feature.profile.ClientCoreProfile;
 import eu.chargetime.ocpp.jsonclientimplementation.config.ApiConfigurations;
 import eu.chargetime.ocpp.model.core.*;
+import eu.chargetime.ocpp.model.firmware.DiagnosticsStatusNotificationConfirmation;
+import eu.chargetime.ocpp.model.firmware.DiagnosticsStatusNotificationRequest;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +46,7 @@ public class ClientService {
         String url = "ws://" + apiConfigurations.getWebSocketBaseUrl()+"/"+apiConfigurations.getChargeBoxId();
 
         AuthorizeRequest testRequest = clientCoreProfile.createAuthorizeRequest(IdTag);
-        jsonClient.connect(url, null);
+        //jsonClient.connect(url, null);
         try {
             AuthorizeConfirmation authorizeConfirmation = (AuthorizeConfirmation) jsonClient.send(testRequest)
                     .toCompletableFuture().get();
@@ -77,8 +80,10 @@ public class ClientService {
 //        ZonedDateTime timestamp = ZonedDateTime.now();
         req.setTimestamp(ZonedDateTime.now());
         //StartTransactionRequest request = clientCoreProfile.createStartTransactionRequest(connectorId, IdTag, meterStart, timestamp);
-        jsonClient.connect(url, null);
+        //jsonClient.connect(url, null);
         try {
+            req.setMeterStart(2);
+            req.setTimestamp(ZonedDateTime.now());
             StartTransactionConfirmation confirmation = (StartTransactionConfirmation) jsonClient.send(req)
                     .toCompletableFuture().get();
             resInf.put("info",confirmation.getIdTagInfo().toString());
@@ -107,8 +112,10 @@ public class ClientService {
 //        StopTransactionRequest request = clientCoreProfile.createStopTransactionRequest(stopValue, timestamp, transactionId);
 //        request.setReason(Reason.PowerLoss);
 
-        jsonClient.connect(url, null);
+//        jsonClient.connect(url, null);
         try {
+            req.setTimestamp(timestamp);
+            req.setReason(Reason.PowerLoss);
             StopTransactionConfirmation confirmation = (StopTransactionConfirmation) jsonClient.send(req)
                     .toCompletableFuture().get();
             resInf.put("info",confirmation.getIdTagInfo().toString());
@@ -136,8 +143,10 @@ public class ClientService {
         ChargePointStatus status = ChargePointStatus.Charging;
 
         //StatusNotificationRequest request = clientCoreProfile.createStatusNotificationRequest(connectorId, errorCode, status);
-        jsonClient.connect(url, null);
+//        jsonClient.connect(url, null);
         try {
+            request.setErrorCode(ChargePointErrorCode.NoError);
+            request.setStatus(ChargePointStatus.Charging);
             StatusNotificationConfirmation confirmation = (StatusNotificationConfirmation) jsonClient.send(request)
                     .toCompletableFuture().get();
             resInf.put("Message", confirmation.toString());
@@ -151,6 +160,7 @@ public class ClientService {
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
+    @PostConstruct
     @GetMapping(path = "/HeartBeat")
     public ResponseEntity<Object> HeartBeat()
             throws Exception {
@@ -164,6 +174,7 @@ public class ClientService {
             HeartbeatConfirmation confirmation = (HeartbeatConfirmation) jsonClient.send(request)
                     .toCompletableFuture().get();
             resInf.put("Message", confirmation.getCurrentTime());
+            System.out.println(confirmation.getCurrentTime());
         } catch (OccurenceConstraintException | UnsupportedFeatureException
                  | ExecutionException | InterruptedException e) {
             log.error("Exception occurred: " + e);
@@ -180,17 +191,6 @@ public class ClientService {
         Map<String, Object> resInf = new HashMap<>();
         JSONObject res;
         String url = "ws://" + apiConfigurations.getWebSocketBaseUrl() + "/" + apiConfigurations.getChargeBoxId();
-
-/*        String vendor = "Dasvision Vendor";
-        String model = "TruongVD";
-
-        BootNotificationRequest request = clientCoreProfile.createBootNotificationRequest(vendor, model);
-        request.setImsi("IMSI Dasvision");
-        request.setIccid("ICCID Dasvision");
-        request.setFirmwareVersion("Version 1.0 for 1.6 Dasvision");
-        request.setMeterType("MeterType Dasvision");
-        request.setChargePointSerialNumber("#CP Serial Dasvision");
-        request.setMeterSerialNumber("#Meter Serial Dasvision");*/
 
         jsonClient.connect(url, null);
         try {
@@ -225,7 +225,7 @@ public class ClientService {
 
         MeterValuesRequest request = clientCoreProfile.createMeterValuesRequest(connectorId, meterValue);
 
-        jsonClient.connect(url, null);
+        //jsonClient.connect(url, null);
         try {
             MeterValuesConfirmation confirmation = (MeterValuesConfirmation) jsonClient.send(request)
                     .toCompletableFuture().get();
@@ -253,12 +253,35 @@ public class ClientService {
 
         DataTransferRequest request = clientCoreProfile.createDataTransferRequest(vendor);
         if(messageID != null && data != null){
-            request.setMessageId(messageID);
+            request.setMessageId(messageID);//
             request.setData(data);
         }
-        jsonClient.connect(url, null);
+//        jsonClient.connect(url, null);
         try {
             DataTransferConfirmation confirmation = (DataTransferConfirmation) jsonClient.send(request)
+                    .toCompletableFuture().get();
+            resInf.put("Message", confirmation.toString());
+        } catch (OccurenceConstraintException | UnsupportedFeatureException
+                 | ExecutionException | InterruptedException e) {
+            log.error("Exception occurred: " + e.getMessage());
+            log.error("Test will fail");
+        }
+        log.info("==============================");
+        res = new JSONObject(resInf);
+        return new ResponseEntity<>(res, HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/DiagnosticsStatus")
+    public ResponseEntity<Object> DiagnosticsStatusNotification(
+            @ModelAttribute DiagnosticsStatusNotificationRequest request
+    ) throws Exception {
+
+        Map<String, Object> resInf = new HashMap<>();
+        JSONObject res;
+        String url = "ws://" + apiConfigurations.getWebSocketBaseUrl() + "/" + apiConfigurations.getChargeBoxId();
+//        jsonClient.connect(url, null);
+        try {
+            DiagnosticsStatusNotificationConfirmation confirmation = (DiagnosticsStatusNotificationConfirmation) jsonClient.send(request)
                     .toCompletableFuture().get();
             resInf.put("Message", confirmation.toString());
         } catch (OccurenceConstraintException | UnsupportedFeatureException

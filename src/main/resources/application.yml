@@ -1,11 +1,11 @@
 websocket:
-  link: "${WEB_SOCKET_URL:localhost:8082/steve/websocket/CentralSystemService}"
+  link: "${WEB_SOCKET_URL:127.0.0.1:7070/steve/websocket/CentralSystemService}"
 
 chargebox:
   id: kiet
 
 server:
-  port: 9001
+  port: 1111
   servlet:
     context-path: /
 
